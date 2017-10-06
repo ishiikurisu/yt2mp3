@@ -5,6 +5,9 @@ deps:
 	apt-get install ffmpeg
 	pip install telepot
 
+bot:
+	python bot.py $(API)
+
 run:
 	python main.py
 
