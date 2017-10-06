@@ -3,6 +3,7 @@
 *.webm
 *.db
 *.bat
+.vagrant/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
