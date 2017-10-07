@@ -2,8 +2,9 @@ import os
 
 def just_do_it(link):
     webm = download(link)
-    convert(webm)
+    mp3 = convert(webm)
     delete(webm)
+    return mp3
 
 def download(link):
   webm = '{0}.webm'.format(link.split('=')[1])
