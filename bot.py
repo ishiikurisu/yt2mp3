@@ -19,11 +19,14 @@ class Bot:
                 if query.startswith('/start') or query.startswith('/help'):
                     self.bot.sendMessage(userId, self.help)
                 elif query.startswith('/download'):
-                    link = query.split(' ')[1]
-                    # TODO Recover from this call if something happens
-                    mp3 = yt2mp3.just_do_it(link)
-                    with open('videos.txt', 'r') as fp:
-                        self.bot.sendDocument(userId, fp)
+                    try:
+                        link = query.split(' ')[1]
+                        mp3 = yt2mp3.just_do_it(link)
+                        with open(mp3, 'rb') as fp:
+                            self.bot.sendDocument(userId, fp)
+                        # TODO Delete mp3 file after sending it
+                    except IndexError:
+                        self.bot.sendMessage(userId, 'what about the link?')
                 else:
                     self.bot.sendMessage(userId, 'wtf?')
 
