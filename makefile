@@ -3,7 +3,7 @@ default: run
 deps:
 	apt-get install youtube-dl
 	apt-get install ffmpeg
-	pip install telepot
+	pip install -r requirements
 
 bot:
 	python bot.py $(API)
