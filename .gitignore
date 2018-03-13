@@ -112,3 +112,5 @@ venv.bak/
 
 # General vagrant
 .vagrant/
+*.part
+*.webm
