@@ -6,8 +6,17 @@ def just_do_it(link):
     delete(webm)
     return mp3
 
+def get_code(link):
+  outlet = 'ytdl'
+  try:
+    outlet = link.split('=')[1]
+  except IndexError:
+    outlet = link.split('/')[-1]
+  return outlet
+
+
 def download(link):
-  webm = '{0}.webm'.format(link.split('=')[1])
+  webm = '{0}.webm'.format(get_code(link))
   cmd = 'youtube-dl -o {1} -f webm {0}'.format(link, webm)
   os.system(cmd)
   return webm
