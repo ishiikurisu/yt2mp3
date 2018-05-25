@@ -1,6 +1,7 @@
 import yt2mp3
 import telepot
 import sys
+import threading
 
 IDLE_STATE = 0
 WAITING_LINK = 1
@@ -29,28 +30,37 @@ class Bot:
             self.states[userId] = IDLE_STATE
 
         current_state = self.states[userId]
-        if current_state == IDLE_STATE:
-            if query.startswith('/start') or query.startswith('/help'):
-                self.bot.sendMessage(userId, self.help)
-            elif query.startswith('/download'):
-                try:
-                    link = query.split(' ')[1]
-                    self.bot.sendMessage(userId, 'now loading...')
-                    mp3 = yt2mp3.just_do_it(link)
-                    with open(mp3, 'rb') as fp:
-                        self.bot.sendDocument(userId, fp)
-                except IndexError:
-                    self.bot.sendMessage(userId, 'what about the link?')
-                    self.states[userId] = WAITING_LINK
+        if query.startswith('/start') or query.startswith('/help'):
+            self.bot.sendMessage(userId, self.help)
+        elif current_state == IDLE_STATE:
+            if query.startswith('/download'):
+                thread = threading.Thread(target=self.idle_download,
+                                          args=(userId, query))
+                thread.start()
             else:
-                self.bot.sendMessage(userId, 'wtf?')
+                self.bot.sendMessage(userId, 'what?')
         elif current_state == WAITING_LINK:
+            thread = threading.Thread(target=self.waiting_download,
+                                      args=(userId, query))
+            thread.start()
+
+    def idle_download(self, userId, query):
+        try:
+            link = query.split(' ')[1]
             self.bot.sendMessage(userId, 'now loading...')
-            mp3 = yt2mp3.just_do_it(query)
+            mp3 = yt2mp3.just_do_it(link)
             with open(mp3, 'rb') as fp:
                 self.bot.sendDocument(userId, fp)
-                self.states[userId] = IDLE_STATE
+        except IndexError:
+            self.bot.sendMessage(userId, 'what about the link?')
+            self.states[userId] = WAITING_LINK
 
+    def waiting_download(self, userId, query):
+        self.bot.sendMessage(userId, 'now loading...')
+        mp3 = yt2mp3.just_do_it(query)
+        with open(mp3, 'rb') as fp:
+            self.bot.sendDocument(userId, fp)
+            self.states[userId] = IDLE_STATE
 
 if __name__ == '__main__':
     api = sys.argv[1]
