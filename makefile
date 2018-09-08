@@ -13,3 +13,4 @@ run:
 
 clean:
 	rm *.mp3
+	rm *.mp4

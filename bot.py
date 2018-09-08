@@ -5,6 +5,7 @@ import threading
 
 IDLE_STATE = 0
 WAITING_LINK = 1
+WAITING_LINK_FOR_VIDEO = 2
 
 class Bot:
     def __init__(self, api):
@@ -37,10 +38,18 @@ class Bot:
                 thread = threading.Thread(target=self.idle_download,
                                           args=(userId, query))
                 thread.start()
+            elif query.startswith('/video'):
+                thread = threading.Thread(target=self.idle_download_mp4,
+                                          args=(userId, query))
+                thread.start()
             else:
                 self.bot.sendMessage(userId, 'what?')
         elif current_state == WAITING_LINK:
             thread = threading.Thread(target=self.waiting_download,
+                                      args=(userId, query))
+            thread.start()
+        elif current_state == WAITING_LINK_FOR_VIDEO:
+            thread = threading.Thread(target=self.waiting_video_link,
                                       args=(userId, query))
             thread.start()
 
@@ -48,17 +57,35 @@ class Bot:
         try:
             link = query.split(' ')[1]
             self.bot.sendMessage(userId, 'now loading...')
-            mp3 = yt2mp3.just_do_it(link)
+            mp3 = yt2mp3.download_mp3(link)
             with open(mp3, 'rb') as fp:
                 self.bot.sendDocument(userId, fp)
         except IndexError:
             self.bot.sendMessage(userId, 'what about the link?')
             self.states[userId] = WAITING_LINK
 
+    def idle_download_mp4(self, userId, query):
+        try:
+            link = query.split(' ')[1]
+            self.bot.sendMessage(userId, 'now loading...')
+            mp4 = yt2mp3.download_mp4(link)
+            with open(mp4, 'rb') as fp:
+                self.bot.sendDocument(userId, fp)
+        except IndexError:
+            self.bot.sendMessage(userId, 'what about the link?')
+            self.states[userId] = WAITING_LINK_FOR_VIDEO
+
     def waiting_download(self, userId, query):
         self.bot.sendMessage(userId, 'now loading...')
-        mp3 = yt2mp3.just_do_it(query)
+        mp3 = yt2mp3.download_mp3(query)
         with open(mp3, 'rb') as fp:
+            self.bot.sendDocument(userId, fp)
+            self.states[userId] = IDLE_STATE
+
+    def waiting_video_link(self, userId, query):
+        self.bot.sendMessage(userId, 'now loading...')
+        mp4 = yt2mp3.download_mp4(query)
+        with open(mp4, 'rb') as fp:
             self.bot.sendDocument(userId, fp)
             self.states[userId] = IDLE_STATE
 
