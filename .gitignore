@@ -4,6 +4,7 @@
 *.db
 *.bat
 .vagrant/
+b/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
