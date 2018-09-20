@@ -6,4 +6,4 @@ if __name__ == '__main__':
     for line in fp:
       videos.append(line.strip())
   for video in videos:
-    yt2mp3.just_do_it(video)
+    yt2mp3.download_mp3(video)
