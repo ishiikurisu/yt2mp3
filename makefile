@@ -6,10 +6,10 @@ deps:
 	pip install -r requirements
 
 bot:
-	python bot.py $(API)
+	python3 bot.py $(API)
 
 run:
-	python main.py
+	python3 main.py
 
 clean:
 	rm *.mp3

@@ -1,11 +1,11 @@
 import os
 
 def download_mp3(link):
-    webm = download(link)
-    mp3 = convert_to_mp3(webm)
-    delete(webm)
-    return mp3
-
+  mp3 = '{0}.mp3'.format(get_code(link))
+  cmd = 'youtube-dl -o {1} -f bestaudio {0}'.format(link, mp3)
+  os.system(cmd)
+  return mp3
+  
 def download_mp4(link):
   webm = download(link)
   mp4 = convert_to_mp4(webm)
@@ -30,6 +30,7 @@ def download(link):
 def convert_to_mp3(webm):
   mp3 = webm.split('.')[0] + '.mp3'
   cmd = 'ffmpeg -i {0} -acodec libmp3lame -aq 4 {1}'.format(webm, mp3)
+  print('#!' + cmd)
   os.system(cmd)
   return mp3
 
